@@ -22,25 +22,10 @@ namespace console_library
             LibraryOfCongress.AddBook(billOfRights);
             LibraryOfCongress.AddBook(schoolHouseRock);
 
-            for(var i = 0; i < LibraryOfCongress.Books.Count; i++){
-                Console.WriteLine($"{i + 1}: {LibraryOfCongress.Books[i].Title}");
-            }
-            // var i = 0;
-            // foreach(var book in LibraryOfCongress.Books){
-            //     Console.WriteLine($"{i + 1}: {book.Title}");
-            // }
+            LibraryOfCongress.Greet();
 
-            Console.Write("Which book would you like to checkout? ");
-            var selection = Console.ReadLine();
-            if (selection == "1"){
-                Console.WriteLine("You've selected one");
-                LibraryOfCongress.CheckOut(constitution);
-            }
-            for(var i = 0; i < LibraryOfCongress.Books.Count; i++){
-                if (!LibraryOfCongress.Books[i].CheckedOut){
-                    Console.WriteLine($"{i + 1}: {LibraryOfCongress.Books[i].Title}");
-                }
-            }
+            LibraryOfCongress.SeeAvailableBooks();
+
         }
     }
 
@@ -49,11 +34,11 @@ namespace console_library
         public string Title;
         public string Author;
         public bool CheckedOut;
-        public Book (string title, string author, bool checkedOut = false)
+        public Book(string title, string author, bool checkedOut = false)
         {
-          Title = title;
-          Author = author;
-          CheckedOut = checkedOut;
+            Title = title;
+            Author = author;
+            CheckedOut = checkedOut;
         }
     }
 
@@ -74,9 +59,9 @@ namespace console_library
             Books.Add(book);
         }
 
-        public void CheckOut(Book book)
+        public void CheckOut(int index)
         {
-            book.CheckedOut = true;
+            Books[index -1].CheckedOut = true;
         }
 
         public void CheckIn(Book book)
@@ -84,6 +69,50 @@ namespace console_library
             book.CheckedOut = false;
         }
 
+        public void SeeAvailableBooks()
+        {
+            for (var i = 0; i < Books.Count; i++)
+            {
+                if (!Books[i].CheckedOut)
+                {
+                    Console.WriteLine($"{i + 1}: {Books[i].Title}");
+                }
+            }
+        }
 
+        public void SeeAllBooks()
+        {
+            for (var i = 0; i < Books.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}: {Books[i].Title}, In Store: {Books[i].CheckedOut}");
+            }
+        }
+
+        public void Greet()
+        {
+            Console.WriteLine($"Welcome to the {Name}.");
+            Console.WriteLine($"Here is a list of our available books.");
+            GetBookChoice();
+        }
+
+        private void GetBookChoice()
+        {
+            SeeAvailableBooks();
+            Console.Write("Which book would you like to checkout? ");
+            var selection = Console.ReadLine();
+            var choice = ValidateSelection(selection);
+            if(choice != 0){
+                CheckOut(choice);
+            }else{
+                GetBookChoice();
+            }
+        }
+
+        private int ValidateSelection(string selection)
+        {
+            int valid;
+            int.TryParse(selection, out valid);
+            return valid;
+        }
     }
 }
